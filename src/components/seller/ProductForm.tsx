@@ -36,6 +36,7 @@ export default function ProductForm() {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
@@ -224,18 +225,15 @@ export default function ProductForm() {
             <div className="flex p-1 bg-muted rounded-xl gap-1">
               <button
                 type="button"
-                onClick={() => {}} // Controlled by register
-                {...register("deliveryType")}
+                onClick={() => setValue("deliveryType", "zip")}
                 className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${deliveryType === 'zip' ? 'bg-background shadow-sm' : 'text-muted-foreground'}`}
-                value="zip"
               >
                 ZIP File
               </button>
               <button
                 type="button"
-                {...register("deliveryType")}
+                onClick={() => setValue("deliveryType", "url")}
                 className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${deliveryType === 'url' ? 'bg-background shadow-sm' : 'text-muted-foreground'}`}
-                value="url"
               >
                 Live Link
               </button>
