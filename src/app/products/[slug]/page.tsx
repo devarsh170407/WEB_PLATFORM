@@ -29,6 +29,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     // TEMPORARY MOCK FOR DEV
     if (process.env.NODE_ENV === "development") {
       product = {
+        id: "mock_product_1",
         title: "Modern E-commerce React Template",
         price: 49.99,
         description: "A high-performance, SEO-friendly e-commerce template built with Next.js 16, Tailwind CSS, and Framer Motion. Features include a complex product grid, shopping cart logic, and a fully responsive checkout flow.",
