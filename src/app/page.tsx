@@ -2,8 +2,9 @@ import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { ArrowRight, Zap, Shield, Globe, Code, Layout, Palette } from "lucide-react";
+import prisma from "@/lib/prisma";
 
-export default function Home() {
+export default async function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
@@ -79,12 +80,12 @@ export default function Home() {
             
             {/* Server-side data fetching */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {await prisma.product.findMany({
+              {(await prisma.product.findMany({
                 where: { status: 'APPROVED' },
                 take: 4,
                 orderBy: { createdAt: 'desc' },
                 include: { seller: { select: { name: true } } }
-              }).then(products => products.map(product => (
+              })).map(product => (
                 <div key={product.id} className="group h-full flex flex-col bg-background border rounded-2xl overflow-hidden hover:border-primary/30 hover:shadow-xl transition-all">
                   <Link href={`/products/${product.slug}`} className="relative aspect-video overflow-hidden">
                     <img 
@@ -115,7 +116,7 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-              )))}
+              ))}
             </div>
           </div>
         </section>
