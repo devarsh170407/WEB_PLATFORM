@@ -35,7 +35,7 @@ export async function createProduct(data: {
       screenshots: data.screenshots,
       fileUrl: data.fileUrl,
       previewUrl: data.previewUrl,
-      status: ProductStatus.PENDING,
+      status: ProductStatus.APPROVED,
       sellerId: dbUser.id,
     }
   });

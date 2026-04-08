@@ -64,6 +64,62 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Latest Products Section */}
+        <section className="py-20">
+          <div className="container mx-auto px-4 md:px-6">
+            <div className="flex items-center justify-between mb-12">
+              <div>
+                <h2 className="text-3xl font-bold">Latest Assets</h2>
+                <p className="text-muted-foreground mt-2">Freshly added digital products from our community</p>
+              </div>
+              <Link href="/browse" className="hidden sm:flex items-center gap-2 text-primary font-bold hover:gap-3 transition-all">
+                View All <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+            
+            {/* Server-side data fetching */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {await prisma.product.findMany({
+                where: { status: 'APPROVED' },
+                take: 4,
+                orderBy: { createdAt: 'desc' },
+                include: { seller: { select: { name: true } } }
+              }).then(products => products.map(product => (
+                <div key={product.id} className="group h-full flex flex-col bg-background border rounded-2xl overflow-hidden hover:border-primary/30 hover:shadow-xl transition-all">
+                  <Link href={`/products/${product.slug}`} className="relative aspect-video overflow-hidden">
+                    <img 
+                      src={product.screenshots[0]} 
+                      alt={product.title} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                    />
+                    <div className="absolute top-3 left-3 px-3 py-1 bg-black/60 backdrop-blur-md text-white text-[10px] font-bold rounded-full uppercase tracking-wider">
+                      {product.category}
+                    </div>
+                  </Link>
+                  <div className="p-5 flex-1 flex flex-col">
+                    <div className="flex-1 space-y-2">
+                      <Link href={`/products/${product.slug}`} className="font-bold text-lg hover:text-primary transition-colors line-clamp-1">
+                        {product.title}
+                      </Link>
+                      <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+                        {product.description}
+                      </p>
+                    </div>
+                    <div className="mt-6 pt-4 border-t flex items-center justify-between">
+                      <div className="text-primary font-black text-lg">
+                        ${product.price}
+                      </div>
+                      <Link href={`/products/${product.slug}`} className="text-xs font-bold uppercase tracking-widest hover:text-primary transition-all">
+                        View Details
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )))}
+            </div>
+          </div>
+        </section>
+
         {/* Features Section */}
         <section className="py-20">
           <div className="container mx-auto px-4 md:px-6">
