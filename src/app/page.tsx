@@ -81,7 +81,6 @@ export default async function Home() {
             {/* Server-side data fetching */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {(await prisma.product.findMany({
-                where: { status: 'APPROVED' },
                 take: 4,
                 orderBy: { createdAt: 'desc' },
                 include: { seller: { select: { name: true } } }

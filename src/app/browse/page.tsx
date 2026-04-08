@@ -20,7 +20,6 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
   // Fetch products with filters
   const products = await prisma.product.findMany({
     where: {
-      status: "APPROVED",
       ...(category ? { category: category as Category } : {}),
       ...(query ? {
         OR: [
