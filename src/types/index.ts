@@ -1,0 +1,21 @@
+export enum ProductStatus {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
+}
+
+export enum Category {
+  HTML_TEMPLATE = "HTML_TEMPLATE",
+  REACT = "REACT",
+  NEXTJS = "NEXTJS",
+  WORDPRESS = "WORDPRESS",
+  VUE = "VUE",
+  ANGULAR = "ANGULAR",
+  UI_KIT = "UI_KIT",
+  LANDING_PAGE = "LANDING_PAGE",
+  ECOMMERCE = "ECOMMERCE",
+  ADMIN_DASHBOARD = "ADMIN_DASHBOARD",
+  OTHER = "OTHER",
+}
+
+export type Role = "BUYER" | "SELLER" | "ADMIN";
