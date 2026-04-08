@@ -10,6 +10,7 @@ import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { createProduct } from "@/actions/products";
 
 const productSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),
@@ -90,16 +91,14 @@ export default function ProductForm() {
 
     setIsSubmitting(true);
     try {
-      // Here we would call a Server Action to save to DB
-      /*
       await createProduct({
         ...values,
         screenshots,
         fileUrl: zipUrl,
       });
-      */
+      
       toast.success("Product submitted for review!");
-      router.push("/seller/products");
+      router.push("/seller/dashboard");
     } catch (error) {
       toast.error("Something went wrong");
     } finally {

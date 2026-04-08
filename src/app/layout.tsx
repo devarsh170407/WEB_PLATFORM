@@ -20,13 +20,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || "pk_test_build_fallback"}>
-      <html lang="en" className="h-full antialiased">
-        <body className={`${inter.variable} font-sans min-h-full flex flex-col`}>
+    <html lang="en" className="h-full antialiased" suppressHydrationWarning>
+      <body className={`${inter.variable} font-sans min-h-full flex flex-col`} suppressHydrationWarning>
+        <ClerkProvider>
           {children}
           <Toaster position="top-center" richColors />
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }
