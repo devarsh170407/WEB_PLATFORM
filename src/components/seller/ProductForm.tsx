@@ -19,6 +19,8 @@ const productSchema = z.object({
   category: z.string().min(1, "Select a category"),
   previewUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
   techStack: z.string().min(3, "Add at least one technology (e.g. React, Nextjs)"),
+  deliveryType: z.enum(["zip", "url"]),
+  liveLink: z.string().url("Must be a valid URL").optional().or(z.literal("")),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
@@ -33,10 +35,16 @@ export default function ProductForm() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
+    defaultValues: {
+      deliveryType: "zip",
+    }
   });
+
+  const deliveryType = watch("deliveryType");
 
   const uploadFile = async (file: File, bucket: string) => {
     setUploading(true);
@@ -87,14 +95,21 @@ export default function ProductForm() {
 
   const onSubmit = async (values: ProductFormValues) => {
     if (screenshots.length === 0) return toast.error("Upload at least one screenshot");
-    if (!zipUrl) return toast.error("Upload the project ZIP file");
+    
+    if (values.deliveryType === "zip" && !zipUrl) {
+      return toast.error("Upload the project ZIP file");
+    }
+    if (values.deliveryType === "url" && !values.liveLink) {
+      return toast.error("Enter the live link for your web app");
+    }
 
     setIsSubmitting(true);
     try {
       await createProduct({
         ...values,
         screenshots,
-        fileUrl: zipUrl,
+        fileUrl: values.deliveryType === "zip" ? zipUrl! : values.liveLink!,
+        previewUrl: values.previewUrl || (values.deliveryType === "url" ? values.liveLink : undefined),
       });
       
       toast.success("Product submitted for review!");
@@ -202,37 +217,74 @@ export default function ProductForm() {
           </div>
         </div>
 
-        {/* File Upload */}
-        <div className="bg-card border rounded-2xl p-6 space-y-4 shadow-sm flex flex-col justify-between">
+        {/* Delivery Method Choice */}
+        <div className="bg-card border rounded-2xl p-6 space-y-6 shadow-sm flex flex-col justify-between">
           <div className="space-y-4">
-            <h2 className="text-lg font-bold">Project Files</h2>
-            <div className="p-8 border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-center space-y-4">
-              {zipUrl ? (
-                <div className="space-y-2">
-                  <CheckCircle2 className="w-12 h-12 text-green-500 mx-auto" />
-                  <p className="text-sm font-medium">ZIP Uploaded Successfully</p>
-                  <button 
-                    type="button" 
-                    onClick={() => setZipUrl(null)} 
-                    className="text-xs text-destructive hover:underline"
-                  >
-                    Remove and re-upload
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <Upload className="w-10 h-10 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm font-medium">Upload Project ZIP</p>
-                    <p className="text-xs text-muted-foreground mt-1">Must be under 50MB</p>
-                  </div>
-                  <label className="px-4 py-2 bg-muted rounded-lg text-sm font-bold cursor-pointer hover:bg-muted/80 transition-all">
-                    Choose File
-                    <input type="file" accept=".zip" className="hidden" onChange={handleZipUpload} disabled={uploading} />
-                  </label>
-                </>
-              )}
+            <h2 className="text-lg font-bold">Delivery Method</h2>
+            <div className="flex p-1 bg-muted rounded-xl gap-1">
+              <button
+                type="button"
+                onClick={() => {}} // Controlled by register
+                {...register("deliveryType")}
+                className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${deliveryType === 'zip' ? 'bg-background shadow-sm' : 'text-muted-foreground'}`}
+                value="zip"
+              >
+                ZIP File
+              </button>
+              <button
+                type="button"
+                {...register("deliveryType")}
+                className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${deliveryType === 'url' ? 'bg-background shadow-sm' : 'text-muted-foreground'}`}
+                value="url"
+              >
+                Live Link
+              </button>
             </div>
+
+            {deliveryType === "zip" ? (
+              <div className="p-8 border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-center space-y-4">
+                {zipUrl ? (
+                  <div className="space-y-2">
+                    <CheckCircle2 className="w-12 h-12 text-green-500 mx-auto" />
+                    <p className="text-sm font-medium">ZIP Uploaded Successfully</p>
+                    <button 
+                      type="button" 
+                      onClick={() => setZipUrl(null)} 
+                      className="text-xs text-destructive hover:underline"
+                    >
+                      Remove and re-upload
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <Upload className="w-10 h-10 text-muted-foreground" />
+                    <div>
+                      <p className="text-sm font-medium">Upload Project ZIP</p>
+                      <p className="text-xs text-muted-foreground mt-1">Must be under 50MB</p>
+                    </div>
+                    <label className="px-4 py-2 bg-muted rounded-lg text-sm font-bold cursor-pointer hover:bg-muted/80 transition-all">
+                      Choose File
+                      <input type="file" accept=".zip" className="hidden" onChange={handleZipUpload} disabled={uploading} />
+                    </label>
+                  </>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-4 pt-2">
+                <div className="grid gap-2">
+                  <label className="text-sm font-medium">Web App URL</label>
+                  <input
+                    {...register("liveLink")}
+                    placeholder="https://your-webapp.vercel.app"
+                    className="w-full px-4 py-2 bg-background border rounded-lg outline-none focus:ring-2 ring-primary/20 transition-all"
+                  />
+                  {errors.liveLink && <p className="text-xs text-destructive">{errors.liveLink.message}</p>}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Buyers will receive direct access to this link after purchase. Use this for SAAS or Hosted Templates.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import Image from "next/image";
 import Link from "next/link";
-import { Download, ShoppingBag } from "lucide-react";
+import { Download, ShoppingBag, ExternalLink } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
@@ -69,10 +69,21 @@ export default async function MyPurchasesPage() {
                         </p>
                       </div>
                       
-                      <button className="w-full py-3 bg-primary/10 text-primary rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary/20 transition-all">
-                        <Download className="w-4 h-4" />
-                        Download ZIP
-                      </button>
+                      {purchase.product.fileUrl.includes("supabase") ? (
+                        <button className="w-full py-3 bg-primary/10 text-primary rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary/20 transition-all">
+                          <Download className="w-4 h-4" />
+                          Download ZIP
+                        </button>
+                      ) : (
+                        <a 
+                          href={purchase.product.fileUrl}
+                          target="_blank"
+                          className="w-full py-3 bg-primary text-primary-foreground rounded-xl font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-all"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                          Visit Web App
+                        </a>
+                      )}
                     </div>
                   </div>
                 ))}

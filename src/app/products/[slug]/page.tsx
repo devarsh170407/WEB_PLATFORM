@@ -111,15 +111,41 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
                 <div className="space-y-4">
                   <BuyButton productId={product.id} />
-                  {product.previewUrl && (
+                  
+                  {product.previewUrl ? (
                     <a 
                       href={product.previewUrl} 
                       target="_blank"
-                      className="w-full py-4 bg-muted text-foreground rounded-2xl font-bold hover:bg-muted/80 transition-all flex items-center justify-center gap-2"
+                      className="w-full py-4 bg-primary/5 text-primary border border-primary/20 rounded-2xl font-bold hover:bg-primary/10 transition-all flex items-center justify-center gap-2"
                     >
                       Live Preview <ExternalLink className="w-4 h-4" />
                     </a>
-                  ) }
+                  ) : product.fileUrl?.startsWith("http") && !product.fileUrl.includes("supabase") && (
+                    <a 
+                      href={product.fileUrl} 
+                      target="_blank"
+                      className="w-full py-4 bg-primary/5 text-primary border border-primary/20 rounded-2xl font-bold hover:bg-primary/10 transition-all flex items-center justify-center gap-2"
+                    >
+                      Live Preview <ExternalLink className="w-4 h-4" />
+                    </a>
+                  )}
+                </div>
+
+                <div className="mt-6 p-4 bg-muted/50 rounded-2xl border border-dashed">
+                  <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-1">Delivery Method</p>
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    {product.fileUrl?.includes("supabase") ? (
+                      <>
+                        <Download className="w-4 h-4 text-primary" />
+                        <span>Instant ZIP Download</span>
+                      </>
+                    ) : (
+                      <>
+                        <ExternalLink className="w-4 h-4 text-primary" />
+                        <span>Direct Link Access</span>
+                      </>
+                    )}
+                  </div>
                 </div>
 
                 <div className="mt-8 pt-8 border-t space-y-4">
